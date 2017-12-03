@@ -63,7 +63,7 @@ public final class TandeMod  {
             public static final class Environment {}
             public static final class Utils {
                 public static final class Methods {
-                    public static final class Complicated {}
+                    public static final class Simple {}
                 }
             }
         }
@@ -72,8 +72,8 @@ public final class TandeMod  {
             public static final class Environment {}
             public static final class Utils {
                 public static final class Methods {
-                    public static final class Complicated {}
                     public static final class Simple {}
+                    public static final class Overloaded {}
                 }
                 public static final class Reflections {}
                 public static final class Types {}
