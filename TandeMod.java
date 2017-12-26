@@ -125,10 +125,10 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
               }
             }
             public static final class Dependent {
-              public static final byte[] PatchClassInJar (String name, byte[] bytes, File location) {
+              public static final byte[] PatchClassInJar (String classToModify, byte[] bytes, File jarLocation) {
                 try {
-                  ZipFile zip = new ZipFile(location);
-                  ZipEntry entry = zip.getEntry(name.replace(".", "/") + "." + "class");
+                  ZipFile zip = new ZipFile(jarLocation);
+                  ZipEntry entry = zip.getEntry(classToModify.replace(".", "/") + "." + "class");
                   if (entry != null) {
                     InputStream zin = zip.getInputStream(entry);
                     bytes = new byte[( (int) entry.getSize() )];
@@ -213,8 +213,11 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
           }
           public static final class Specific {
             public static final class Info {
-              public static final String className = TandeMod.class.getName();
-              public static final String modSorterClassPath = "cpw.mods.fml.common.toposort.ModSorter";
+              public static final String rootClassName = TandeMod.class.getName();
+              // This is the list of clases to be modified by this mod
+              public static final List<String> classesToModify = new ArrayList<String>() {{
+                add("cpw.mods.fml.common.toposort.ModSorter");
+              }};
             }
             public static final class Files {
               public static File modLocation;
@@ -262,13 +265,13 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                 return Universal.Utils.Methods.Standalone.ToArray(ClassName());
               }
               public static final String ClassName () {
-                return Environment.Specific.Info.className;
+                return Environment.Specific.Info.rootClassName;
               }
               public static final void InjectData (Map<String, Object> data) {
                 Content.API.Local.Environment.Specific.Files.modLocation = (File) data.get("coremodLocation");
               }
               public static final byte[] TransformClass (String arg0, String arg1, byte[] arg2) {
-                if (arg0.equals(API.Local.Environment.Specific.Info.modSorterClassPath)) {
+                if (Environment.Specific.Info.classesToModify.contains(arg0)) {
                   arg2 = Universal.Utils.Methods.Dependent.PatchClassInJar(arg0, arg2, Environment.Specific.Files.modLocation);
                 }
                 return arg2;
