@@ -19,12 +19,12 @@ import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.toposort.TopologicalSort.DirectedGraph;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.common.Configuration;
 
 /** Important Information
 
@@ -52,6 +52,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
  * "!" Must collide with the expression on which the symbol wants to be used
  *Calls to other methods must be as specific and firect as possible
  *Casts to objects must be wrapped around in parenthesis, to ease readability.
+ *If you plan to use disposable data, it must be contained into a List.
  *In General, code must be as readable and compact as possible (Not too compact, nor trying to explain every bit. Just try to find balance between these terms)
 
  * New files should be named in such a way that you can distinguish their "Stability level" and author. Here's an example:
@@ -75,7 +76,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
  * As a side note, this file uses "2 spaces" indentation.
 
  * TODO: Otra checadita...
- * TODO: ¿Crear la configuración de una vez? (Para ALGO (Hay que recordar que mierda era......) (Si no mal recuerdo, era una tarea de tipo PreInit o más atrás...) (O creo que era para definir si es que quería que "TandeMod" sacara a un archivo de texto todas sus listas de ID's disponibles (SI o No) hasta el último)
  * TODO: THIS SHIT WORKS?! (Hay que ver si funciona igual en modo OFUSCADO)
  * TODO: Recuerda que hay que revivir-hallar 5 mods en total, contando este CoreMod.
  * TODO: Después de todo esto, seguir adelante :D (¿Iré por buen camino?) 
@@ -86,7 +86,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 @MCVersion(TandeMod.Content.API.Local.Environment.General.Info.minecraftVersionDesignedFor)
 @Mod(modid = TandeMod.Content.API.Local.Environment.General.Info.modIDAlt, name = TandeMod.Content.API.Local.Environment.General.Info.modIDAlt, version = TandeMod.Content.API.Local.Environment.General.Info.modVersion, acceptedMinecraftVersions = TandeMod.Content.API.Local.Environment.General.Info.minecraftVersionDesignedFor)
-@NetworkMod (clientSideRequired = true, serverSideRequired = true)
 public final class TandeMod extends DummyModContainer implements IClassTransformer, IFMLCallHook, IFMLLoadingPlugin {
   public static final class Content {
     public static final class API {
@@ -101,10 +100,11 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                     //TODO: This goes somewhere else...
                     public static final String emptyString = "";
                     public static final String defaultMessage = "I'm a default exception. CHANGE THIS MESSAGE!";
-                    public static final String providedIDNotValid = "Provided ID isn't valid";
-                    public static final String providedIDNotAvailableTerrainBlock = "Provided ID isn't available for: TERRAIN BLOCK";
+                    //TODO. Tal vez algún dia me encargue de arreglar este famosos problema de una buena vez por todas...pero aún no
                     public static final String providedIDNotAvailableBlock = "Provided ID isn't available for: BLOCK";
                     public static final String providedIDNotAvailableItem = "Provided ID isn't available for: ITEM";
+                    public static final String providedIDNotAvailableTerrainBlock = "Provided ID isn't available for: TERRAIN BLOCK";
+                    public static final String providedIDNotValid = "Provided ID isn't valid";
                   }
                 }
                 public static final class Fatal {
@@ -120,11 +120,38 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
         public static final class Utils {
           public static final class Methods {
             public static final class Standalone {
+              public static final void LoadConfig (Configuration config, boolean var) {
+                if (var) {
+                  config.load();
+                }
+              }
+              public static final void SaveConfig (Configuration config, boolean var) {
+                if (var) {
+                  config.save();
+                }
+              }
+              public static final void SetModConfig (Configuration config, File file, boolean isNecessary) {
+                //TODO: If a config file IS really necessary...
+                if (isNecessary) {
+                  config = new Configuration(file, true);
+                }
+              }
+              public static final boolean RegisterBus (EventBus bus, Object klass) {
+                bus.register(klass);
+                return true;
+              }
               public static final String[] ToArray (String... array) {
                 return array;
               }
             }
             public static final class Dependent {
+              public static final byte[] TransformClass (List<String> listOfClassesToModify, File jarLocation, String arg0, String arg1, byte[] arg2) {
+                if (listOfClassesToModify.contains(arg0)) {
+                  arg2 = PatchClassInJar(arg0, arg2, jarLocation);
+                  listOfClassesToModify.remove(arg0);
+                }
+                return arg2;
+              }
               public static final byte[] PatchClassInJar (String classToModify, byte[] bytes, File jarLocation) {
                 try {
                   ZipFile zip = new ZipFile(jarLocation);
@@ -184,12 +211,12 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
             }
             public static final class ModInfo extends ModMetadata {
               public ModInfo (String modID, String modName, String modVersion, String modDescription, String modWebsite, String... modAuthors) {
+                authorList = Arrays.asList(modAuthors);
+                description = modDescription;
                 modId = modID;
                 name = modName;
-                version = modVersion;
-                description = modDescription;
                 url = modWebsite;
-                authorList = Arrays.asList(modAuthors);
+                version = modVersion;
               }
             }
           }
@@ -210,17 +237,17 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
               public static final String modVersion = "0.64";
               public static final String modWebsite = "http://guekho64.webs.com/";
             }
+            public static final class Files {
+              public static File modLocation;
+            }
           }
           public static final class Specific {
             public static final class Info {
-              public static final String rootClassName = TandeMod.class.getName();
               // This is the list of clases to be modified by this mod
               public static final List<String> classesToModify = new ArrayList<String>() {{
                 add("cpw.mods.fml.common.toposort.ModSorter");
               }};
-            }
-            public static final class Files {
-              public static File modLocation;
+              public static final String rootClassName = TandeMod.class.getName();
             }
           }
         }
@@ -247,12 +274,12 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                   return false;
                 }
               }
-              public static final boolean RegisterBus (EventBus bus, Object klass) {
-                bus.register(klass);
-                return true;
-              }
             }
             public static final class Dependent {
+              public static final void TandeMod () {
+                // TODO: Don't forget this method it's still here!
+                PrintToLog("%s", "Don't forget I'm still Here!");
+              }
               // TODO: Don't forget this method it's still here!
               public static final Void Call () {
                 PrintToLog("%s", "Don't forget I'm still Here!");
@@ -268,13 +295,10 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                 return Environment.Specific.Info.rootClassName;
               }
               public static final void InjectData (Map<String, Object> data) {
-                Content.API.Local.Environment.Specific.Files.modLocation = (File) data.get("coremodLocation");
+                Environment.General.Files.modLocation = (File) data.get("coremodLocation");
               }
               public static final byte[] TransformClass (String arg0, String arg1, byte[] arg2) {
-                if (Environment.Specific.Info.classesToModify.contains(arg0)) {
-                  arg2 = Universal.Utils.Methods.Dependent.PatchClassInJar(arg0, arg2, Environment.Specific.Files.modLocation);
-                }
-                return arg2;
+                return Universal.Utils.Methods.Dependent.TransformClass(Environment.Specific.Info.classesToModify, Environment.General.Files.modLocation, arg0, arg1, arg2);
               }
             }
           }
@@ -318,6 +342,7 @@ aspects. Instead, our own methods will be created and all of these methods will 
 what our methods return.    */
   public TandeMod () {
     super(new Content.API.Universal.Utils.Types.ModInfo(Content.API.Local.Environment.General.Info.modID, Content.API.Local.Environment.General.Info.modName, Content.API.Local.Environment.General.Info.modVersion, Content.API.Local.Environment.General.Info.modDescription, Content.API.Local.Environment.General.Info.modWebsite, Content.API.Local.Environment.General.Info.modAuthors));
+    Content.API.Local.Utils.Methods.Dependent.TandeMod();
   }
   @Override
   public Void call () throws Exception {
@@ -341,7 +366,7 @@ what our methods return.    */
   }
   @Override
   public boolean registerBus (EventBus bus, LoadController controller) {
-    return Content.API.Local.Utils.Methods.Standalone.RegisterBus(bus, this);
+    return Content.API.Universal.Utils.Methods.Standalone.RegisterBus(bus, this);
   }
   @Override
   public final byte[] transform (String arg0, String arg1, byte[] arg2) {
