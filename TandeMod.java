@@ -2,6 +2,7 @@ package guekho64.code.minecraft.coreMods;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,8 +18,12 @@ import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.ItemData;
 import cpw.mods.fml.common.toposort.TopologicalSort.DirectedGraph;
 import cpw.mods.fml.relauncher.IFMLCallHook;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
@@ -93,6 +98,35 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
         public static final class Config {}
         public static final class Environment {
           public static final class General {
+            public static final class ID {
+              public static final class Block {
+                public static final class Ranges {
+                  public static final class Impossible {
+                    public static final int firstID = 0;
+                    public static final int lastID = net.minecraft.block.Block.blocksList.length;
+                  }
+                  public static final class Possible {
+                    public static final int firstID = Impossible.firstID + 1;
+                    public static final int lastTerrainID = Impossible.firstID + 255;
+                    public static final int lastID = Impossible.lastID - 1;
+                  }
+                }
+                public static final class Info {}
+              }
+              public static final class Item {
+                public static final class Ranges {
+                  public static final class Impossible {
+                    public static final int firstID = Block.Ranges.Possible.lastID;
+                    public static final int lastID = net.minecraft.item.Item.itemsList.length;
+                  }
+                  public static final class Possible {
+                    public static final int firstID = Impossible.firstID + 1;
+                    public static final int lastID = Impossible.lastID - 1;
+                  }
+                }
+                public static final class Info {}
+              }
+            }
             public static final class Misc {
               public static final class Exception {
                 public static final class Fixable {
@@ -100,7 +134,7 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                     //TODO: This goes somewhere else...
                     public static final String emptyString = "";
                     public static final String defaultMessage = "I'm a default exception. CHANGE THIS MESSAGE!";
-                    //TODO. Tal vez algún dia me encargue de arreglar este famosos problema de una buena vez por todas...pero aún no
+                    //TODO. Tal vez algún dia me encargue de arreglar este famoso problema de una buena vez por todas...pero aún no
                     public static final String providedIDNotAvailableBlock = "Provided ID isn't available for: BLOCK";
                     public static final String providedIDNotAvailableItem = "Provided ID isn't available for: ITEM";
                     public static final String providedIDNotAvailableTerrainBlock = "Provided ID isn't available for: TERRAIN BLOCK";
@@ -120,6 +154,14 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
         public static final class Utils {
           public static final class Methods {
             public static final class Standalone {
+              public static final boolean CheckValidID (int id, int firstPossibleID, int lastPossibleID) {
+                if ( !(id < firstPossibleID) && !(id > lastPossibleID) ) {
+                  return true;
+                }
+                else {
+                  return false;
+                }
+              }
               public static final void LoadConfig (Configuration config, boolean var) {
                 if (var) {
                   config.load();
@@ -145,6 +187,85 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
               }
             }
             public static final class Dependent {
+              public static final List<List> EmptyIDs (Map<Integer, ItemData> occupiedIDsList) {
+                final List<List> listOfLists = new ArrayList<List>();
+                final List<List> availableBlockIDListOfLists = new ArrayList<List>();
+                final List<Integer> availableTerrainBlockIDList = new ArrayList<Integer>();
+                final List<Integer> availableNormalBlockIDList = new ArrayList<Integer>();
+                final List<Integer> availableItemIDList = new ArrayList<Integer>();
+                for (int id = 0; !(id > Environment.General.ID.Item.Ranges.Possible.lastID) ;++id) {
+                  if (!(occupiedIDsList.containsKey(id))) {
+                    if (CheckValidID(id, true)) {
+                      if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
+                        availableTerrainBlockIDList.add(id);
+                      }
+                      else {
+                        availableNormalBlockIDList.add(id);
+                      }
+                    }
+                    else if (CheckValidID(id, false)) {
+                      availableItemIDList.add(id);
+                    }
+                    else {
+                      CustomException(Environment.General.Misc.Exception.Fixable.Messages.providedIDNotValid, false);
+                    }
+                  }
+                  else {
+                    if (CheckValidID(id, true)) {
+                      if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
+                        CustomException(Environment.General.Misc.Exception.Fixable.Messages.providedIDNotAvailableTerrainBlock, false);
+                      }
+                      else {
+                        CustomException(Environment.General.Misc.Exception.Fixable.Messages.providedIDNotAvailableBlock, false);
+                      }
+                    }
+                    else if (CheckValidID(id, false)) {
+                      CustomException(Environment.General.Misc.Exception.Fixable.Messages.providedIDNotAvailableItem, false);
+                    }
+                    else {
+                      CustomException(Environment.General.Misc.Exception.Fixable.Messages.providedIDNotValid, false);
+                    }
+                  }
+                }
+                listOfLists.add(availableBlockIDListOfLists);
+                availableBlockIDListOfLists.add(availableTerrainBlockIDList);
+                availableBlockIDListOfLists.add(availableNormalBlockIDList);
+                listOfLists.add(availableItemIDList);
+                return listOfLists;
+              }
+              public static final boolean CheckValidID (int id, boolean isBlock) {
+                if (isBlock) {
+                  return Standalone.CheckValidID(id, Environment.General.ID.Block.Ranges.Possible.firstID, Environment.General.ID.Block.Ranges.Possible.lastID);
+                }
+                else {
+                  return Standalone.CheckValidID(id, Environment.General.ID.Item.Ranges.Possible.firstID, Environment.General.ID.Item.Ranges.Possible.lastID);
+                }
+              }
+              public static final Map<Integer, ItemData> GetIDMap () {
+                try {
+                  return (new Reflections.IDMap().idMap);
+                }
+                catch (Exception problem) {
+                  //TODO: Create a custom msg
+                  throw CustomException("Something went wrong when retrieving a new IDMap", true);
+                }
+              }
+              public static final int GetEmptyID (List<Integer>  emptyIDsList, int preferredValue, List<Integer> myOccupiedIDs) {
+                int value;
+                if (emptyIDsList.contains(preferredValue)) {
+                  value = preferredValue;
+                }
+                else if ( (preferredValue == 0) || !(emptyIDsList.contains(preferredValue)) ) {
+                  value = emptyIDsList.get(0);
+                }
+                else {
+                  //TODO: Create a custom msg
+                  throw CustomException("No ID available", true);
+                }
+                emptyIDsList.remove(value);
+                myOccupiedIDs.add(value);
+                return value;
+              }
               public static final byte[] TransformClass (List<String> listOfClassesToModify, File jarLocation, String arg0, String arg1, byte[] arg2) {
                 if (listOfClassesToModify.contains(arg0)) {
                   arg2 = PatchClassInJar(arg0, arg2, jarLocation);
@@ -154,10 +275,10 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
               }
               public static final byte[] PatchClassInJar (String classToModify, byte[] bytes, File jarLocation) {
                 try {
-                  ZipFile zip = new ZipFile(jarLocation);
-                  ZipEntry entry = zip.getEntry(classToModify.replace(".", "/") + "." + "class");
+                  final ZipFile zip = new ZipFile(jarLocation);
+                  final ZipEntry entry = zip.getEntry(classToModify.replace(".", "/") + "." + "class");
                   if (entry != null) {
-                    InputStream zin = zip.getInputStream(entry);
+                    final InputStream zin = zip.getInputStream(entry);
                     bytes = new byte[( (int) entry.getSize() )];
                     try {
                       zin.read(bytes);
@@ -184,6 +305,7 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                 }
                 return bytes;
               }
+              //TODO: This shouldn't be used...instead, specify the reason of the problem
               public static final RuntimeException CustomException (boolean fatal) {
                 return CustomException(Environment.General.Misc.Exception.Fixable.Messages.emptyString, fatal);
               }
@@ -217,6 +339,22 @@ public final class TandeMod extends DummyModContainer implements IClassTransform
                 name = modName;
                 url = modWebsite;
                 version = modVersion;
+              }
+            }
+          }
+          public static final class Reflections {
+            public static final class IDMap {
+              public static Field map;
+              public static Map<Integer, ItemData> idMap; {
+                try {
+                  map = GameData.class.getDeclaredField("idMap");
+                  map.setAccessible(true);
+                  idMap = (Map<Integer, ItemData>) map.get(new GameData());
+                }
+                catch (Exception problem) {
+                  //TODO: Create a custom msg
+                  throw Methods.Dependent.CustomException("Something went wrong when obtaining anew IDMap", true);
+                }
               }
             }
           }
@@ -376,4 +514,12 @@ what our methods return.    */
   public String[] getLibraryRequestClass () {
     return null;
   }
+  /*    You may be thinking that these variables are just debug/junk stuff, but, in fact
+they aren't. By removing these, obfuscated code will complain about not finding
+some classes (Although they exist indeed) and de-obfuscated code will crash if these
+are active (Like Development Environment). Wanna see? Remove these, compile and
+watch the world burn...or setup your own Dev Workspace and uncomment these lines
+In both cases, the world will burn...Why?! I don't know, but it works that way...    */
+  public static final int Yay = net.minecraft.block.Block.blocksList.length;
+  public static final int DoesYayItsTheOnlyVariableNameWhichSolvesThisProblem = net.minecraft.item.Item.itemsList.length;
 }
