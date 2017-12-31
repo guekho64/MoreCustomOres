@@ -7,7 +7,7 @@ import cpw.mods.fml.common.Mod;
 /** Important Information
 @author guekho64
 @version 0.64
-@category Library
+@category Mod
 @since 31/12/2017
 @lastUpdated 31/12/2017 12:53 PM
 @link http://www.guekho64.webs.com
