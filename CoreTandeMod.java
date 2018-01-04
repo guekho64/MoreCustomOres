@@ -23,9 +23,9 @@ import net.minecraft.launchwrapper.IClassTransformer;
 /** Important Information
 @author guekho64
 @version 0.64
-@category CoreMod
+@category Library
 @since 31/12/2017
-@lastUpdated 31/12/2017 12:53 PM
+@lastUpdated 4/1/2018 4:09 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -41,7 +41,7 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
         public static final class Info extends Universal.Utils.MoldClasses.InfobyGuekho64 {
           public static final int modNumber = 0;
           public static final String minecraftVersionDesignedFor = "1.6.4";
-          public static final String modDescription = "The Ultime Mod for Minecraft 1.6.4!";
+          public static final String modDescription = "The Ultime CoreMod for Minecraft 1.6.4!";
           public static final String modID = "CoreTandeMod";
           public static final String modName = modID;
           public static final String modVersion = "0.64";
