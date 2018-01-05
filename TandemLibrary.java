@@ -33,7 +33,7 @@ import net.minecraftforge.common.Property;
 @version 0.64
 @category Library
 @since 31/12/2017
-@lastUpdated 5/1/2018 1:57 PM
+@lastUpdated 5/1/2018 2:50 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -244,23 +244,6 @@ public final class TandemLibrary {
           }
         }
         public static final class Dependent {
-          public static final void AddItemToRegistry (Item item) {
-            if (!Environment.General.Registry.InGameData.Slots.Occupied.items.contains(item)) {
-              Environment.General.Registry.InGameData.Slots.Occupied.items.add(item);
-            }
-          }
-          public static final void AddBlockToRegistry (Block block, boolean isTerrainType) {
-            if (isTerrainType) {
-              if (!Environment.General.Registry.InGameData.Slots.Occupied.terrainBlocks.contains(block)) {
-                Environment.General.Registry.InGameData.Slots.Occupied.terrainBlocks.add(block);
-              }
-            }
-            else {
-              if (!Environment.General.Registry.InGameData.Slots.Occupied.normalBlocks.contains(block)) {
-                Environment.General.Registry.InGameData.Slots.Occupied.normalBlocks.add(block);
-              }
-            }
-          }
           public static final boolean GetAutoIDFixStatus (Configuration config) {
             //TODO: Set custom msg
             return config.get(Environment.General.Config.Categories.behaviorChanges, Environment.General.Config.Options.autoIDFix, Environment.General.Config.DefaultValues.autoIDFix, "Setting this to TRUE will override ID's from below, so they'll change if needed.\nYou should activate this when creating a NEW ModPack or if you're adding this\nmod for first time to a NEW OR EXISTING ModPack.\nIf you're going to add more mods to an EXISTING ONE that may alredy have\nsome worlds or if IT ISN'T the first time you add this mod, turn this off to avoid data/world corruption.").getBoolean(Environment.General.Config.DefaultValues.autoIDFix);
@@ -593,7 +576,12 @@ public final class TandemLibrary {
               super(Methods.Standalone.ItemIDLess(Methods.Dependent.GetItemID(config, rawName, Methods.Dependent.GetAutoIDFixStatus(config))));
               setCreativeTab(creativeTab);
               setUnlocalizedName(rawName);
-              Methods.Dependent.AddItemToRegistry(this);
+              AddItemToRegistry(this);
+            }
+          }
+          public static final void AddItemToRegistry (Item item) {
+            if (!Environment.General.Registry.InGameData.Slots.Occupied.items.contains(item)) {
+              Environment.General.Registry.InGameData.Slots.Occupied.items.add(item);
             }
           }
           public static final class Block extends net.minecraft.block.Block {
@@ -602,7 +590,19 @@ public final class TandemLibrary {
               setCreativeTab(creativeTab);
               setUnlocalizedName(rawName);
               GameRegistry.registerBlock(this);
-              Methods.Dependent.AddBlockToRegistry(this, isTerrainType);
+              AddBlockToRegistry(this, isTerrainType);
+            }
+            public static final void AddBlockToRegistry (Block block, boolean isTerrainType) {
+              if (isTerrainType) {
+                if (!Environment.General.Registry.InGameData.Slots.Occupied.terrainBlocks.contains(block)) {
+                  Environment.General.Registry.InGameData.Slots.Occupied.terrainBlocks.add(block);
+                }
+              }
+              else {
+                if (!Environment.General.Registry.InGameData.Slots.Occupied.normalBlocks.contains(block)) {
+                  Environment.General.Registry.InGameData.Slots.Occupied.normalBlocks.add(block);
+                }
+              }
             }
           }
           public static final class CreativeTab extends CreativeTabs {
