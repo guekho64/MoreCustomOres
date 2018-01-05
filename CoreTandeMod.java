@@ -23,9 +23,9 @@ import net.minecraft.launchwrapper.IClassTransformer;
 /** Important Information
 @author guekho64
 @version 0.64
-@category Library
+@category CoreMod
 @since 31/12/2017
-@lastUpdated 4/1/2018 4:09 PM
+@lastUpdated 5/1/2018 2:04 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -38,7 +38,7 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
     }
     public static final class Environment {
       public static final class General {
-        public static final class Info extends Universal.Utils.MoldClasses.InfobyGuekho64 {
+        public static final class Info extends Universal.Utils.Types.Others.InfobyGuekho64 {
           public static final int modNumber = 0;
           public static final String minecraftVersionDesignedFor = "1.6.4";
           public static final String modDescription = "The Ultime CoreMod for Minecraft 1.6.4!";
@@ -97,7 +97,7 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
             }
           }
           public static final ModMetadata GetModMetadata () {
-            return new Universal.Utils.Types.ModInfo(Environment.General.Info.modID, Environment.General.Info.modName, Environment.General.Info.modVersion, Environment.General.Info.modDescription, Environment.General.Info.website, Environment.General.Info.authors);
+            return new Universal.Utils.Types.GameRelated.ModInfo(Environment.General.Info.modID, Environment.General.Info.modName, Environment.General.Info.modVersion, Environment.General.Info.modDescription, Environment.General.Info.website, Environment.General.Info.authors);
           }
           //TODO: Don't forget this method it's still here!
           public static final Void Call () {
