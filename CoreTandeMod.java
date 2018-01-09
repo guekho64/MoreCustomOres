@@ -25,7 +25,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 @version 0.64
 @category CoreMod
 @since 31/12/2017
-@lastUpdated 5/1/2018 2:04 PM
+@lastUpdated 8/1/2018 10:11 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -33,9 +33,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 @MCVersion(CoreTandeMod.Local.Environment.General.Info.minecraftVersionDesignedFor)
 public final class CoreTandeMod extends DummyModContainer implements IClassTransformer, IFMLCallHook, IFMLLoadingPlugin {
   public static final class Local {
-    public static final class Config {
-      //TODO: If someday I need to implement some kind of config for THIS mod
-    }
     public static final class Environment {
       public static final class General {
         public static final class Info extends Universal.Utils.Types.Others.InfobyGuekho64 {
@@ -85,11 +82,11 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
           }
         }
         public static final class Dependent {
-          //TODO: Don't forget this method it's still here!
           public static final void CoreTandeModConstructor (boolean doNothing) {
             if (!doNothing) {
               TandemLibrary.Local.Utils.Methods.Dependent.TandemLibraryConstructor(true);
               TandeMod.Local.Utils.Methods.TandeModConstructor(true);
+              //TODO: Don't forget this method it's still here!
               PrintToLog("%s", Universal.Environment.General.Misc.Messages.Special.thisExists);
             }
             else {
@@ -99,8 +96,8 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
           public static final ModMetadata GetModMetadata () {
             return new Universal.Utils.Types.GameRelated.ModInfo(Environment.General.Info.modID, Environment.General.Info.modName, Environment.General.Info.modVersion, Environment.General.Info.modDescription, Environment.General.Info.website, Environment.General.Info.authors);
           }
-          //TODO: Don't forget this method it's still here!
           public static final Void Call () {
+            //TODO: Don't forget this method it's still here!
             PrintToLog("%s", Universal.Environment.General.Misc.Messages.Special.thisExists);
             return null;
           }
