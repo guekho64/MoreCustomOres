@@ -441,6 +441,7 @@ public final class TandemLibrary {
             }
           }
           public static final void EmptyIDs (Map<Integer, ItemData> occupiedIDsMap) {
+            if (!Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce) {
             for (int id = 0; !(id > Environment.General.ID.Item.Ranges.Possible.lastID); ++id) {
               if ( !(occupiedIDsMap.containsKey(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.terrainBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.normalBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.itemIDs.contains(id)) ) {
                 if (CheckValidID(id, true)) {
@@ -481,8 +482,10 @@ public final class TandemLibrary {
                 }
               }
             }
-            if (!Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce) {
-              Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce = true;
+            Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce = true;
+            }
+            else {
+              throw CustomException("You mustn't call this method twice! If you think this is the first time, then some other mod has called it before. If that's the case, then this method has alredy dumped data into some speciai lists at Universal.Environment.General.Registry.InGameData.Slots", true);
             }
           }
           public static final boolean CheckValidItemID (int id) {
@@ -579,6 +582,7 @@ public final class TandemLibrary {
               AddItemToRegistry(this);
             }
           }
+          //TODO: Tal vez termine haciendo estos métodos parte de una Interfaz...
           public static final void AddItemToRegistry (Item item) {
             if (!Environment.General.Registry.InGameData.Slots.Occupied.items.contains(item)) {
               Environment.General.Registry.InGameData.Slots.Occupied.items.add(item);
