@@ -33,7 +33,7 @@ import net.minecraftforge.common.Property;
 @version 0.64
 @category Library
 @since 31/12/2017
-@lastUpdated 5/1/2018 2:50 PM
+@lastUpdated 22/1/2018 1:03 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -295,7 +295,7 @@ public final class TandemLibrary {
               DropUnusedItemID(fallbackID);
             }
             if (CheckValidItemID(configRetrievedID)) {
-              if ( (!Environment.General.Registry.InGameData.Slots.Available.item.contains(configRetrievedID)) && (!wasFallbackIDUseful) ) {
+              if ( !(Environment.General.Registry.InGameData.Slots.Available.item.contains(configRetrievedID)) && !(wasFallbackIDUseful) ) {
                 if (autoIDFix) {
                   configRetrievedID = GetEmptyItemID(0);
                 }
@@ -350,7 +350,7 @@ public final class TandemLibrary {
             }
             if (CheckValidBlockID(configRetrievedID, isTerrainType)) {
               if (isTerrainType) {
-                if ( (!Environment.General.Registry.InGameData.Slots.Available.terrain.contains(configRetrievedID)) && (!wasFallbackIDUseful) ) {
+                if ( !(Environment.General.Registry.InGameData.Slots.Available.terrain.contains(configRetrievedID)) && !(wasFallbackIDUseful) ) {
                   if (autoIDFix) {
                     configRetrievedID = GetEmptyBlockID(0, isTerrainType);
                   }
@@ -361,7 +361,7 @@ public final class TandemLibrary {
                 }
               }
               else {
-                if ( (!Environment.General.Registry.InGameData.Slots.Available.normal.contains(configRetrievedID)) && (!wasFallbackIDUseful) ) {
+                if ( !(Environment.General.Registry.InGameData.Slots.Available.normal.contains(configRetrievedID)) && !(wasFallbackIDUseful) ) {
                   if (autoIDFix) {
                     configRetrievedID = GetEmptyBlockID(0, isTerrainType);
                   }
@@ -442,47 +442,47 @@ public final class TandemLibrary {
           }
           public static final void EmptyIDs (Map<Integer, ItemData> occupiedIDsMap) {
             if (!Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce) {
-            for (int id = 0; !(id > Environment.General.ID.Item.Ranges.Possible.lastID); ++id) {
-              if ( !(occupiedIDsMap.containsKey(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.terrainBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.normalBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.itemIDs.contains(id)) ) {
-                if (CheckValidID(id, true)) {
-                  if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
-                    if (!Environment.General.Registry.InGameData.Slots.Available.terrain.contains(id)) {
-                      Environment.General.Registry.InGameData.Slots.Available.terrain.add(id);
+              for (int id = 0; !(id > Environment.General.ID.Item.Ranges.Possible.lastID); ++id) {
+                if ( !(occupiedIDsMap.containsKey(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.terrainBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.normalBlockIDs.contains(id)) && !(Environment.General.Registry.InGameData.Slots.Occupied.itemIDs.contains(id)) ) {
+                  if (CheckValidID(id, true)) {
+                    if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
+                      if (!Environment.General.Registry.InGameData.Slots.Available.terrain.contains(id)) {
+                        Environment.General.Registry.InGameData.Slots.Available.terrain.add(id);
+                      }
+                    }
+                    else {
+                      if (!Environment.General.Registry.InGameData.Slots.Available.normal.contains(id)) {
+                        Environment.General.Registry.InGameData.Slots.Available.normal.add(id);
+                      }
+                    }
+                  }
+                  else if (CheckValidID(id, false)) {
+                    if (!Environment.General.Registry.InGameData.Slots.Available.item.contains(id)) {
+                      Environment.General.Registry.InGameData.Slots.Available.item.add(id);
                     }
                   }
                   else {
-                    if (!Environment.General.Registry.InGameData.Slots.Available.normal.contains(id)) {
-                      Environment.General.Registry.InGameData.Slots.Available.normal.add(id);
+                    CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotValid.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
+                  }
+                }
+                else {
+                  if (CheckValidID(id, true)) {
+                    if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
+                      CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableTerrainBlock.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
+                    }
+                    else {
+                      CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableBlock.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
                     }
                   }
-                }
-                else if (CheckValidID(id, false)) {
-                  if (!Environment.General.Registry.InGameData.Slots.Available.item.contains(id)) {
-                    Environment.General.Registry.InGameData.Slots.Available.item.add(id);
-                  }
-                }
-                else {
-                  CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotValid.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
-                }
-              }
-              else {
-                if (CheckValidID(id, true)) {
-                  if (!(id > Environment.General.ID.Block.Ranges.Possible.lastTerrainID)) {
-                    CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableTerrainBlock.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
+                  else if (CheckValidID(id, false)) {
+                    CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableItem.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
                   }
                   else {
-                    CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableBlock.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
+                    CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotValid.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
                   }
                 }
-                else if (CheckValidID(id, false)) {
-                  CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotAvailableItem.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
-                }
-                else {
-                  CustomException(Environment.General.Misc.Messages.Exceptions.Fixable.providedIDNotValid.replaceFirst(("//" + Environment.General.Misc.CompatibilityStandards.Symbols.replaceableSymbol), ((Integer) id).toString()) , false);
-                }
               }
-            }
-            Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce = true;
+              Environment.General.Registry.InternalData.Assumptions.hasGuekho64CodeCinecraftCoreModsTandemLibraryUniversalUtilsMethodsDependentEmptyIDsBeenExecutedAtLeastOnce = true;
             }
             else {
               throw CustomException("You mustn't call this method twice! If you think this is the first time, then some other mod has called it before. If that's the case, then this method has alredy dumped data into some speciai lists at Universal.Environment.General.Registry.InGameData.Slots", true);
@@ -516,14 +516,16 @@ public final class TandemLibrary {
               throw CustomException("Something went wrong when retrieving a new IDMap", true);
             }
           }
-          public static final byte[] TransformClass (List<String> listOfClassesToModify, File jarLocation, String arg0, String arg1, byte[] arg2) {
-            if (listOfClassesToModify.contains(arg0)) {
-              arg2 = PatchClassInJar(arg0, arg2, jarLocation);
-              listOfClassesToModify.remove((String) arg0);
+          public static final byte[] TransformClass (List<String> listOfClassesToPatch, List<String> listOfClassesToOverride, File jarLocation, String arg0, String arg1, byte[] arg2) {
+            if (listOfClassesToPatch.contains(arg0)) {
+            }
+            else if (listOfClassesToOverride.contains(arg0)) {
+              arg2 = OverrideClassInJar(arg0, arg2, jarLocation);
+              listOfClassesToOverride.remove((String) arg0);
             }
             return arg2;
           }
-          public static final byte[] PatchClassInJar (String classToModify, byte[] bytes, File jarLocation) {
+          public static final byte[] OverrideClassInJar (String classToModify, byte[] bytes, File jarLocation) {
             try {
               final ZipFile zip = new ZipFile(jarLocation);
               final ZipEntry entry = zip.getEntry(classToModify.replace('.', '/') + '.' + "class");
