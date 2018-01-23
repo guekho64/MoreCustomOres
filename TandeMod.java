@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 @version 0.64
 @category Mod
 @since 31/12/2017
-@lastUpdated 5/1/2018 2:02 PM
+@lastUpdated 22/1/2018 7:01 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -37,11 +37,11 @@ public final class TandeMod {
     }
     public static final class Utils {
       public static final class Methods {
-        //TODO: Don't forget this method it's still here!
         public static final void TandeModConstructor (boolean doNothing) {
           if (!doNothing) {
             TandemLibrary.Local.Utils.Methods.Dependent.TandemLibraryConstructor(true);
             CoreTandeMod.Local.Utils.Methods.Dependent.CoreTandeModConstructor(true);
+            //TODO: Don't forget this method it's still here!
             PrintToLog("%s", Universal.Environment.General.Misc.Messages.Special.thisExists);
           }
           else {
@@ -72,6 +72,7 @@ public final class TandeMod {
   @EventHandler
   public static final void PostInitPhase (FMLPostInitializationEvent event) {
     //TODO: Don't forget this method's here!
+    Local.Utils.Methods.PrintToLog("%s", Universal.Environment.General.Misc.Messages.Special.thisExists);
     Universal.Utils.Methods.Dependent.EmptyIDs(Universal.Utils.Methods.Dependent.GetIDMap());
   }
 }
