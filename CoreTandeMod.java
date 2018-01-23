@@ -25,7 +25,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 @version 0.64
 @category CoreMod
 @since 31/12/2017
-@lastUpdated 8/1/2018 6:56 PM
+@lastUpdated 22/1/2018 6:56 PM
 @link http://www.guekho64.webs.com
  **/
 
