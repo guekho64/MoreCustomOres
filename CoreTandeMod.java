@@ -25,7 +25,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 @version 0.64
 @category CoreMod
 @since 31/12/2017
-@lastUpdated 8/1/2018 10:11 PM
+@lastUpdated 8/1/2018 6:56 PM
 @link http://www.guekho64.webs.com
  **/
 
@@ -49,7 +49,14 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
       }
       public static final class Specific {
         public static final class Info {
-          //TODO: This is the list of clases to be overriden by this CoreMod (And Maybe someday I'll add "classesToModify" for classes to be modified)
+          //TODO: This is the list of clases to be patched by this CoreMod
+          public static final List<String> classesToPatch = new ArrayList<String>() {{
+            add("net.minecraft.block.Block");
+            add("aqz");
+            add("net.minecraft.item.Item");
+            add("yc");
+          }};
+          //TODO: This is the list of clases to be overriden by this CoreMod
           public static final List<String> classesToOverride = new ArrayList<String>() {{
             add("cpw.mods.fml.common.toposort.ModSorter");
           }};
@@ -114,7 +121,7 @@ public final class CoreTandeMod extends DummyModContainer implements IClassTrans
             Environment.General.Files.thisCoreModLocation = (File) data.get("coremodLocation");
           }
           public static final byte[] TransformClass (String arg0, String arg1, byte[] arg2) {
-            return Universal.Utils.Methods.Dependent.TransformClass(Environment.Specific.Info.classesToOverride, Environment.General.Files.thisCoreModLocation, arg0, arg1, arg2);
+            return Universal.Utils.Methods.Dependent.TransformClass(Environment.Specific.Info.classesToPatch, Environment.Specific.Info.classesToOverride, Environment.General.Files.thisCoreModLocation, arg0, arg1, arg2);
           }
         }
       }
