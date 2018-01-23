@@ -33,7 +33,7 @@ import net.minecraftforge.common.Property;
 @version 0.64
 @category Library
 @since 31/12/2017
-@lastUpdated 22/1/2018 1:03 PM
+@lastUpdated 22/1/2018 18:53 PM
 @link http://www.guekho64.webs.com
  **/
 
